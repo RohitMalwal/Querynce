@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from services.openrouter_api import chat, summarize
+from routes.ingest import ingest_bp
 
 app = Flask(__name__)
+app.register_blueprint(ingest_bp)
 CORS(app)
 
 @app.get("/")

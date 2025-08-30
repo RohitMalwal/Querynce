@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services import parser, openrouter_api
+from utils.chunker import chunk_text
 
 ingest_bp = Blueprint("ingest", __name__)
 
@@ -28,20 +29,30 @@ def ingest():
             if not text:
                 return jsonify({"error": "No text provided"}), 400
 
+        # Handle YouTube transcripts
         elif input_type == "youtube":
             url = request.form.get("url", "")
             text = parser.extract_text_from_youtube(url)
             if text.startswith("ERROR"):
                 return jsonify({"error": text}), 400
-            summary = openrouter_api.summarize(text)
-            return jsonify(summary)
 
         else:
             return jsonify({"error": "Invalid input type"}), 400
 
-        # Pass extracted text to OpenRouter summarizer
-        summary = openrouter_api.summarize(text)
-        return jsonify(summary)
+        # --- 🔑 Apply chunking before summarization ---
+        chunks = chunk_text(text, max_chars=3000)
+        summaries = [openrouter_api.summarize(c) for c in chunks]
+
+        # Merge summaries into one response
+        combined_summary = " ".join([s["summary"] for s in summaries])
+        combined_bullets = []
+        for s in summaries:
+            combined_bullets.extend(s.get("bullets", []))
+
+        return jsonify({
+            "summary": combined_summary,
+            "bullets": combined_bullets[:10]  # keep top 10 bullets
+        })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

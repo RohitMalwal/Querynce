@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 /backend/dev/*
+/backend/templates/*
+/backend/static/*

@@ -42,4 +42,4 @@ def chat():
         return jsonify({"answer": final_answer})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": f"Chat processing failed: {str(e)}"}), 500

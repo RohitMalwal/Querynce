@@ -50,7 +50,7 @@ def ingest():
         for s in summaries:
             combined_bullets.extend(s.get("bullets", []))
 
-        # ✅ Include docId + raw text in response
+        # Include docId + raw text in response
         response = {
             "docId": "doc-" + str(int(time.time())),
             "summary": combined_summary,

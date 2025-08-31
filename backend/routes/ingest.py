@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from services import parser, openrouter_api
 from utils.chunker import chunk_text
+import time
 
 ingest_bp = Blueprint("ingest", __name__)
 
@@ -44,15 +45,20 @@ def ingest():
         summaries = [openrouter_api.summarize(c) for c in chunks]
 
         # Merge summaries into one response
-        combined_summary = " ".join([s["summary"] for s in summaries])
+        combined_summary = " ".join([s["summary"] for s in summaries if "summary" in s])
         combined_bullets = []
         for s in summaries:
             combined_bullets.extend(s.get("bullets", []))
 
-        return jsonify({
+        # ✅ Include docId + raw text in response
+        response = {
+            "docId": "doc-" + str(int(time.time())),
             "summary": combined_summary,
-            "bullets": combined_bullets[:10]  # keep top 10 bullets
-        })
+            "bullets": combined_bullets[:10],  # keep top 10 bullets
+            "text": text   # send extracted full text so frontend can use it in chat
+        }
+
+        return jsonify(response)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

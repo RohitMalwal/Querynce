@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Querynce — Ask your documents</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="container topbar__inner">
+      <div class="brand">
+        <div class="brand__dot" aria-hidden="true"></div>
+        <span class="brand__name">Querynce</span>
+        <span class="brand__tag">Ask your documents — instantly</span>
+      </div>
+      <div class="topbar__note">Live demo • Backend connected</div>
+    </div>
+  </header>
+
+  <main class="container layout">
+    <!-- LEFT: Ingest + Result -->
+    <section class="col col--left">
+      <!-- Ingest card -->
+      <div class="card">
+        <div class="card__head">
+          <h2 class="card__title">Add a document</h2>
+          <div class="card__meta">URL • PDF • YouTube</div>
+        </div>
+
+        <div class="switch">
+          <button class="switch__btn is-active" data-source="url" id="btnSourceUrl">Link</button>
+          <button class="switch__btn" data-source="pdf" id="btnSourcePdf">PDF</button>
+        </div>
+
+        <!-- URL input row -->
+        <div class="row" id="rowUrl">
+          <div class="input-with-icon">
+            <!-- Link icon -->
+            <svg class="icon icon--inline" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10 13a5 5 0 0 1 7 0l1 1a5 5 0 0 1-7 7l-1-1"></path>
+              <path d="M14 11a5 5 0 0 1-7 0l-1-1a5 5 0 1 1 7-7l1 1"></path>
+            </svg>
+            <input id="inpUrl" type="url" placeholder="Paste a link or YouTube URL (incl. https://)" />
+          </div>
+          <button id="btnProcessUrl" class="btn btn--primary">Process</button>
+        </div>
+
+        <!-- PDF input row -->
+        <div class="row is-hidden" id="rowPdf">
+          <div class="filepicker">
+            <button id="btnChoosePdf" class="btn btn--neutral">
+              <!-- Upload icon -->
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Choose PDF</span>
+            </button>
+            <input id="filePdf" type="file" accept="application/pdf" hidden />
+            <span id="pdfName" class="filepicker__name">No file selected</span>
+          </div>
+          <button id="btnProcessPdf" class="btn btn--primary">Process</button>
+        </div>
+
+        <p id="errIngest" class="error is-hidden"></p>
+      </div>
+
+      <!-- Result card -->
+      <div class="card">
+        <div class="card__head">
+          <h3 class="card__title">Result</h3>
+          <div class="actions">
+            <button id="btnCopy" class="btn btn--neutral" disabled>Copy notes</button>
+            <button id="btnExport" class="btn btn--neutral" disabled>Export .txt</button>
+          </div>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div id="resultSkeleton" class="skeleton is-hidden">
+          <div class="sk sk--lg"></div>
+          <div class="sk"></div>
+          <div class="sk"></div>
+          <div class="sk"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="resultEmpty" class="muted">
+          No document yet. Paste a link or choose a PDF, then click <strong>Process</strong>.
+        </div>
+
+        <!-- Document display -->
+        <div id="resultDoc" class="doc is-hidden">
+          <div class="doc__meta">Doc ID: <span id="docId"></span></div>
+          <h4 id="docTitle" class="doc__title"></h4>
+          <p id="docSummary" class="doc__summary"></p>
+          <ul id="docBullets" class="doc__bullets"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Chat -->
+    <aside class="col col--right">
+      <div class="card card--sticky">
+        <h3 class="card__title">Ask about this doc</h3>
+
+        <div id="chatScroll" class="chat">
+          <div class="bubble bubble--assistant">
+            Hi! Upload a PDF or paste a link, then ask questions about it.
+          </div>
+        </div>
+
+        <div class="chat__composer">
+          <input id="inpMessage" type="text" placeholder="Process a doc first" disabled />
+          <button id="btnSend" class="btn btn--primary" title="Send" disabled>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="helptext">Backend endpoints: <code>/api/ingest</code> and <code>/api/chat</code>.</div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="container footer">
+    <div class="footer__inner">
+      Ingest → summary + bullets → ask → copy/export.
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
